@@ -34,10 +34,10 @@ type PimpMiner struct {
 	Menu           string             `json:"menu"`
 	Postexec       string             `json:"postexec"`
 	Profiles       []PimpMinerProfile `json:"profiles"`
-	MainVersion    string             
-	DevelVersion   string             
-	PageURL        string             
-	PageURLRegex   string             
+	MainVersion    string
+	DevelVersion   string
+	PageURL        string
+	PageURLRegex   string
 	SupportedAlgos string
 }
 
