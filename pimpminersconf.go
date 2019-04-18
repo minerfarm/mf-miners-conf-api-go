@@ -18,9 +18,9 @@ package pimpminersconf
 import (
 	"bytes"
 	"encoding/json"
-	"net/http"
 	"io"
 	"io/ioutil"
+	"net/http"
 	"os"
 )
 
@@ -42,7 +42,7 @@ type PimpMiner struct {
 	DevelVersion   string
 	PageURL        string
 	PageURLRegex   string
-	SupportedAlgos string
+	SupportedAlgos []string
 }
 
 type PimpMinerProfile struct {
@@ -53,17 +53,17 @@ type PimpMinerProfile struct {
 
 // Load returns a mapstring of PimpMiners populated with data from the pimpminers.conf file
 func Load(file string) map[string][]PimpMiner {
-	// if no file specified, use default in /opt/pimp.	
+	// if no file specified, use default in /opt/pimp.
 	if file == "" {
 		file = LOCAL
 	}
 	if FileExists(LOCAL) != "" {
-		// download the file 
+		// download the file
 		if err := DownloadFile(file, REMOTE); err != nil {
 			panic(err)
 		}
 	}
-	
+
 	jsonFile, err := os.Open(file) // Open the JSON file
 	if err != nil {                // if os.Open returns an error then handle it
 		panic(err)
@@ -88,21 +88,21 @@ func GetMiner(name string, miners map[string][]PimpMiner) PimpMiner {
 
 // DownloadFile will download a url to a local file.
 func DownloadFile(filepath string, url string) error {
-    // Get the data
-    resp, err := http.Get(url)
-    if err != nil {
-        return err
-    }
-    defer resp.Body.Close()
-    // Create the file
-    out, err := os.Create(filepath)
-    if err != nil {
-        return err
-    }
-    defer out.Close()
-    // Write the body to file
-    _, err = io.Copy(out, resp.Body)
-    return err
+	// Get the data
+	resp, err := http.Get(url)
+	if err != nil {
+		return err
+	}
+	defer resp.Body.Close()
+	// Create the file
+	out, err := os.Create(filepath)
+	if err != nil {
+		return err
+	}
+	defer out.Close()
+	// Write the body to file
+	_, err = io.Copy(out, resp.Body)
+	return err
 }
 
 // FileExists takes a filename string and returns it if it exists, or empty string if it does not.
