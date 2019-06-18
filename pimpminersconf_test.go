@@ -19,9 +19,9 @@ import (
 	"testing"
 )
 
-func TestLoad (t *testing.T) {
+func TestLoad(t *testing.T) {
 
-	miners := Load("/opt/pimp/pimpminers.conf") // integrate with pimpminers.conf
+	miners := Load("/tmp/pimpminers.conf") // integrate with pimpminers.conf
 	var actualResult = miners["240"][0].Repotype
 	var expectedResult = "binary"
 

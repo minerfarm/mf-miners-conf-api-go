@@ -25,7 +25,7 @@ import (
 )
 
 const REMOTE = "https://raw.githubusercontent.com/getpimp/pimpminers-conf/master/pimpminers.conf"
-const LOCAL = "/opt/pimp/pimpminers.conf"
+const LOCAL = "/tmp/pimpminers.conf"
 
 type PimpMiner struct {
 	Info           string             `json:"info"`
