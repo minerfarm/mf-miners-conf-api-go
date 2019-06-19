@@ -110,7 +110,6 @@ func checkErr(err error) { // to keep code clean
 // DownloadFile will download a url to a local file.
 func DownloadFile(filepath string, url string) error {
 	// Get the data
-	fmt.Println("downloading.")
 	resp, err := http.Get(url)
 	if err != nil {
 		return err
