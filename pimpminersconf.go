@@ -1,3 +1,4 @@
+// Package pimpminersconf is the API wrapper for interacting with the pimpminers.conf json library.
 /*==================================================================
        .__
 ______ |__| _____ ______  Portable Instant Mining Platform
@@ -20,12 +21,18 @@ import (
 	"io/ioutil"
 	"net/http"
 	"os"
+	"os/exec"
+	"time"
+
+	"gopkg.in/src-d/go-git.v4"
+	"gopkg.in/src-d/go-git.v4/plumbing/object"
 )
 
 const remote = "https://raw.githubusercontent.com/getpimp/pimpminers-conf/master/pimpminers.conf"
 const local = "/tmp/pimpminers.conf"
 const pimp2repo = "https://update.getpimp.org/pimpup/miners/"
 
+// PimpMiner is the golang representation of the pimpminers.conf json library.
 type PimpMiner struct {
 	Info           string             `json:"info"`
 	Platform       string             `json:"platform"`
@@ -126,6 +133,13 @@ func DownloadFile(filepath string, url string) error {
 	return err
 }
 
+// RunCommand runs the specified string as a command in a bash shell, and returns its output as a string.
+func RunCommand(cmd string) string {
+	out, err := exec.Command("bash", "-c", cmd).Output()
+	checkErr(err)
+	return string(out)
+}
+
 // Save takes a map of strings to Miners object, marshals it into json, and then saves it as a file.
 func Save(jsonfile string, m map[string][]PimpMiner) {
 	json, err := json.Marshal(m)
@@ -154,4 +168,38 @@ func PrettyPrint(in string) string {
 		return in
 	}
 	return out.String()
+}
+
+// Clone will clone the pimpminers-conf repo to /tmp/pimpminers-conf.
+func Clone() *git.Repository {
+	r, err := git.PlainClone("/tmp/pimpminers-conf", false, &git.CloneOptions{
+		URL:      "https://github.com/getpimp/pimpminers-conf.git",
+		Progress: os.Stdout,
+	})
+	checkErr(err)
+	return r
+}
+
+// Commit will commit the pimpminers-conf repo to git. (Maintainers only.) Returns true if success.
+func Commit(r *git.Repository, msg string) bool {
+	// copy file from staging into worktree
+	RunCommand("cp /tmp/pimpminers.conf /tmp/pimpminers-conf/pimpminers.conf")
+	w, err := r.Worktree()
+	checkErr(err)
+	// add files
+	_, err = w.Add("pimpminers.conf")
+	checkErr(err)
+	// commit
+	_, err = w.Commit(msg, &git.CommitOptions{
+		Author: &object.Signature{
+			Name:  "pimplabops",
+			Email: "ops@getpimp.org",
+			When:  time.Now(),
+		},
+	})
+	checkErr(err)
+	if err != nil {
+		return false
+	}
+	return true
 }
