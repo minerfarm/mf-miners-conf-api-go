@@ -5,27 +5,28 @@ ______ |__| _____ ______  Portable Instant Mining Platform
 |  |_> >  |  Y Y  \  |_> >
 |   __/|__|__|_|  /   __/    Support: forum.getpimp.org
 |__|            \/|__|
-
 Copyright (c) 2019 getPiMP.org.  All Rights Reserved.
-Author: Portable Instant Mining Platform, LLC
 License: This code is licensed for use with PiMP only.
 Description: PiMP OS pimpminers.conf API wrapper in Golang
 Interacts with this file: https://github.com/getpimp/pimpminers-conf/pimpminers.conf
-==================================================================
-*/
+==================================================================*/
 package pimpminersconf
 
 import (
 	"bytes"
 	"encoding/json"
+	"fmt"
 	"io"
 	"io/ioutil"
 	"net/http"
 	"os"
+
+	pimpminersconf "github.com/getpimp/pimpminers-conf-api-go"
 )
 
-const REMOTE = "https://raw.githubusercontent.com/getpimp/pimpminers-conf/master/pimpminers.conf"
-const LOCAL = "/tmp/pimpminers.conf"
+const remote = "https://raw.githubusercontent.com/getpimp/pimpminers-conf/master/pimpminers.conf"
+const local = "/tmp/pimpminers.conf"
+const pimp2repo = "https://update.getpimp.org/pimpup/miners/"
 
 type PimpMiner struct {
 	Info           string             `json:"info"`
@@ -37,7 +38,7 @@ type PimpMiner struct {
 	Configure      string             `json:"configure"`
 	Menu           string             `json:"menu"`
 	Postexec       string             `json:"postexec"`
-	Profiles       []PimpMinerProfile `json:"profiles"`
+	Profiles       []pimpMinerProfile `json:"profiles"`
 	MainVersion    string
 	DevelVersion   string
 	PageURL        string
@@ -45,7 +46,7 @@ type PimpMiner struct {
 	SupportedAlgos []string
 }
 
-type PimpMinerProfile struct {
+type pimpMinerProfile struct {
 	ID    string `json:"id"`
 	Name  string `json:"name"`
 	Cfile string `json:"cfile"`
@@ -53,19 +54,22 @@ type PimpMinerProfile struct {
 
 // Load returns a mapstring of PimpMiners populated with data from the pimpminers.conf file
 func Load(file string) map[string][]PimpMiner {
-	// if no file specified, use default in /opt/pimp.
+	// if no file specified, default to /tmp/pimpminers.conf
 	if file == "" {
-		file = LOCAL
+		file = local
 	}
-	if FileExists(LOCAL) != "" {
+	if FileExists(local) != "" {
+		fmt.Println("file no exists")
 		// download the file
-		if err := DownloadFile(file, REMOTE); err != nil {
-			panic(err)
+		if err := DownloadFile(file, remote); err != nil {
+			fmt.Println("ERROR DOWNLOADING")
+			//panic(err)
 		}
 	}
 
 	jsonFile, err := os.Open(file) // Open the JSON file
 	if err != nil {                // if os.Open returns an error then handle it
+		fmt.Println("ERROR opening")
 		panic(err)
 	}
 	defer jsonFile.Close()                   // defer the closing of our jsonFile so that we can parse it later on
@@ -86,9 +90,30 @@ func GetMiner(name string, miners map[string][]PimpMiner) PimpMiner {
 	return PimpMiner{}
 }
 
+// SetRepo updates a PimpMiner object's repo property with the specified filename.
+// Note: This is for pimpup 2.x.
+func SetRepo(name string, repo string, miners map[string][]PimpMiner) string {
+	out := ""
+	for _, v := range miners {
+		if v[0].Info == name {
+			out = pimp2repo + repo + ".tgz" // for output / return value
+			v[0].Repo = out                 // update the object
+		}
+	}
+	return out
+}
+
+// checkErr checks if there was an error, and if it does, prints it to the screen
+func checkErr(err error) { // to keep code clean
+	if err != nil {
+		fmt.Println(err.Error()) // output the error
+	}
+}
+
 // DownloadFile will download a url to a local file.
 func DownloadFile(filepath string, url string) error {
 	// Get the data
+	fmt.Println("downloading.")
 	resp, err := http.Get(url)
 	if err != nil {
 		return err
@@ -103,6 +128,17 @@ func DownloadFile(filepath string, url string) error {
 	// Write the body to file
 	_, err = io.Copy(out, resp.Body)
 	return err
+}
+
+// exportJSON takes a map of strings to Miners object, marshals it into json, and then saves it as a file.
+func exportJSON(jsonfile string, m map[string][]pimpminersconf.PimpMiner) {
+	json, err := json.Marshal(m)
+	checkErr(err)
+	f, err := os.Create(jsonfile)
+	checkErr(err)
+	defer f.Close()
+	out := []byte(pimpminersconf.PrettyPrint(string(json)))
+	f.Write(out)
 }
 
 // FileExists takes a filename string and returns it if it exists, or empty string if it does not.
