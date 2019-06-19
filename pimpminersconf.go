@@ -198,6 +198,9 @@ func Commit(r *git.Repository, msg string) bool {
 		},
 	})
 	checkErr(err)
+	// push
+	err = r.Push(&git.PushOptions{})
+	checkErr(err)
 	if err != nil {
 		return false
 	}
