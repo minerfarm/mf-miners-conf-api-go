@@ -29,7 +29,8 @@ import (
 )
 
 const remote = "https://raw.githubusercontent.com/getpimp/pimpminers-conf/master/pimpminers.conf"
-const local = "/tmp/pimpminers.conf"
+const stagingFile = "/tmp/pimpminers.conf"
+const localGitRepo = "/tmp/pimpminers-conf"
 const pimp2repo = "https://update.getpimp.org/pimpup/miners/"
 
 // PimpMiner is the golang representation of the pimpminers.conf json library.
@@ -61,9 +62,9 @@ type pimpMinerProfile struct {
 func Load(file string) map[string][]PimpMiner {
 	// if no file specified, default to /tmp/pimpminers.conf
 	if file == "" {
-		file = local
+		file = stagingFile
 	}
-	if FileExists(local) == "" {
+	if FileExists(stagingFile) == "" {
 		// download the file
 		if err := DownloadFile(file, remote); err != nil {
 			fmt.Println("ERROR downloading the file.")
@@ -114,7 +115,7 @@ func checkErr(err error) { // to keep code clean
 	}
 }
 
-// DownloadFile will download a url to a local file.
+// DownloadFile will download a url to a stagingFile file.
 func DownloadFile(filepath string, url string) error {
 	// Get the data
 	resp, err := http.Get(url)
@@ -172,7 +173,10 @@ func PrettyPrint(in string) string {
 
 // Clone will clone the pimpminers-conf repo to /tmp/pimpminers-conf.
 func Clone() *git.Repository {
-	r, err := git.PlainClone("/tmp/pimpminers-conf", false, &git.CloneOptions{
+	// backup existing dir and move out of the way.
+	move := fmt.Sprintf("mv %s %s.old", localGitRepo, localGitRepo)
+	RunCommand(move)
+	r, err := git.PlainClone(localGitRepo, false, &git.CloneOptions{
 		URL:      "https://github.com/getpimp/pimpminers-conf.git",
 		Progress: os.Stdout,
 	})
@@ -183,7 +187,8 @@ func Clone() *git.Repository {
 // Commit will commit the pimpminers-conf repo to git. (Maintainers only.) Returns true if success.
 func Commit(r *git.Repository, msg string) bool {
 	// copy file from staging into worktree
-	RunCommand("cp /tmp/pimpminers.conf /tmp/pimpminers-conf/pimpminers.conf")
+	copy := fmt.Sprintf("cp %s %s/pimpminers.conf", stagingFile, localGitRepo)
+	RunCommand(copy)
 	w, err := r.Worktree()
 	checkErr(err)
 	// add files
