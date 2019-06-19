@@ -56,18 +56,17 @@ func Load(file string) map[string][]PimpMiner {
 	if file == "" {
 		file = local
 	}
-	if FileExists(local) != "" {
-		fmt.Println("file no exists")
+	if FileExists(local) == "" {
 		// download the file
 		if err := DownloadFile(file, remote); err != nil {
-			fmt.Println("ERROR DOWNLOADING")
-			//panic(err)
+			fmt.Println("ERROR downloading the file.")
+			panic(err)
 		}
 	}
 
 	jsonFile, err := os.Open(file) // Open the JSON file
 	if err != nil {                // if os.Open returns an error then handle it
-		fmt.Println("ERROR opening")
+		fmt.Println("ERROR opening the file.")
 		panic(err)
 	}
 	defer jsonFile.Close()                   // defer the closing of our jsonFile so that we can parse it later on
