@@ -20,8 +20,6 @@ import (
 	"io/ioutil"
 	"net/http"
 	"os"
-
-	pimpminersconf "github.com/getpimp/pimpminers-conf-api-go"
 )
 
 const remote = "https://raw.githubusercontent.com/getpimp/pimpminers-conf/master/pimpminers.conf"
