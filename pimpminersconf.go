@@ -129,13 +129,13 @@ func DownloadFile(filepath string, url string) error {
 }
 
 // exportJSON takes a map of strings to Miners object, marshals it into json, and then saves it as a file.
-func exportJSON(jsonfile string, m map[string][]pimpminersconf.PimpMiner) {
+func exportJSON(jsonfile string, m map[string][]PimpMiner) {
 	json, err := json.Marshal(m)
 	checkErr(err)
 	f, err := os.Create(jsonfile)
 	checkErr(err)
 	defer f.Close()
-	out := []byte(pimpminersconf.PrettyPrint(string(json)))
+	out := []byte(PrettyPrint(string(json)))
 	f.Write(out)
 }
 
