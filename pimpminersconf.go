@@ -126,8 +126,8 @@ func DownloadFile(filepath string, url string) error {
 	return err
 }
 
-// exportJSON takes a map of strings to Miners object, marshals it into json, and then saves it as a file.
-func exportJSON(jsonfile string, m map[string][]PimpMiner) {
+// Save takes a map of strings to Miners object, marshals it into json, and then saves it as a file.
+func Save(jsonfile string, m map[string][]PimpMiner) {
 	json, err := json.Marshal(m)
 	checkErr(err)
 	f, err := os.Create(jsonfile)
