@@ -188,14 +188,15 @@ func Clone() *git.Repository {
 // Commit will commit the pimpminers-conf repo to git. (Maintainers only.) Returns true if success.
 func Commit(r *git.Repository, msg string) bool {
 	// check for differences.
-	diff := fmt.Sprintf("diff -U 0 %s %s/pimpminers.conf | grep -v ^@ | wc -l", stagingFile, localGitRepo)
-	RunCommand(diff)
+	diffCmd := fmt.Sprintf("diff -U 0 %s %s/pimpminers.conf | grep -v ^@ | wc -l", stagingFile, localGitRepo)
+	diff := RunCommand(diffCmd)
 	diff = strings.TrimSpace(diff)
 	if diff == "0" {
 		fmt.Println("No changes to commit.")
 	} else {
 		// copy file from staging into worktree
-		diff = fmt.Sprintf("diff -U 0 %s %s/pimpminers.conf | grep -v ^@", stagingFile, localGitRepo)
+		diffCmd = fmt.Sprintf("diff -U 0 %s %s/pimpminers.conf | grep -v ^@", stagingFile, localGitRepo)
+		diff = RunCommand(diffCmd)
 		diff = strings.TrimSpace(diff)
 		fmt.Println("Changes:")
 		fmt.Println(diff)
