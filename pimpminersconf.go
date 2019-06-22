@@ -186,25 +186,36 @@ func Clone() *git.Repository {
 
 // Commit will commit the pimpminers-conf repo to git. (Maintainers only.) Returns true if success.
 func Commit(r *git.Repository, msg string) bool {
-	// copy file from staging into worktree
-	copy := fmt.Sprintf("cp %s %s/pimpminers.conf", stagingFile, localGitRepo)
-	RunCommand(copy)
-	w, err := r.Worktree()
-	checkErr(err)
-	// add files
-	_, err = w.Add("pimpminers.conf")
-	checkErr(err)
-	// commit
-	_, err = w.Commit(msg, &git.CommitOptions{
-		Author: &object.Signature{
-			Name:  "pimplabops",
-			Email: "ops@getpimp.org",
-			When:  time.Now(),
-		},
-	})
-	checkErr(err)
-	if err != nil {
-		return false
+	// check for differences.
+	diff := fmt.Sprintf("diff -U 0 %s %s/pimpminers.conf | grep -v ^@ | wc -l", stagingFile, localGitRepo)
+	RunCommand(diff)
+	if diff == "0" {
+		fmt.Println("No changes to commit.")
+	} else {
+		// copy file from staging into worktree
+		diff = fmt.Sprintf("diff -U 0 %s %s/pimpminers.conf | grep -v ^@", stagingFile, localGitRepo)
+		fmt.Println("Changes:")
+		fmt.Println(diff)
+		fmt.Println("\nCommitting changes... ")
+		copy := fmt.Sprintf("cp %s %s/pimpminers.conf", stagingFile, localGitRepo)
+		RunCommand(copy)
+		w, err := r.Worktree()
+		checkErr(err)
+		// add files
+		_, err = w.Add("pimpminers.conf")
+		checkErr(err)
+		// commit
+		_, err = w.Commit(msg, &git.CommitOptions{
+			Author: &object.Signature{
+				Name:  "pimplabops",
+				Email: "labops@getpimp.org",
+				When:  time.Now(),
+			},
+		})
+		checkErr(err)
+		if err != nil {
+			return false
+		}
 	}
 	return true
 }
