@@ -51,6 +51,7 @@ type PimpMiner struct {
 	PageURL        string
 	PageURLRegex   string
 	SupportedAlgos []string
+	BtcTalk        string
 }
 
 type pimpMinerProfile struct {
