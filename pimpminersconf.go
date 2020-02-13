@@ -66,12 +66,11 @@ func Load(file string) map[string][]PimpMiner {
 	if file == "" {
 		file = stagingFile
 	}
-	if FileExists(stagingFile) == "" {
-		// download the file
-		if err := DownloadFile(file, remote); err != nil {
-			fmt.Println("ERROR downloading the file.")
-			panic(err)
-		}
+
+	// download the file
+	if err := DownloadFile(file, remote); err != nil {
+		fmt.Println("ERROR downloading the file.")
+		panic(err)
 	}
 
 	jsonFile, err := os.Open(file) // Open the JSON file
