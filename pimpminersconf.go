@@ -36,22 +36,22 @@ const pimp2repo = "https://update.getpimp.org/pimpup/miners/"
 
 // PimpMiner is the golang representation of the pimpminers.conf json library.
 type PimpMiner struct {
-	Info           string             `json:"info"`
-	Platform       string             `json:"platform"`
-	Repotype       string             `json:"repotype"`
-	Repo           string             `json:"repo"`
-	Folder         string             `json:"folder"`
-	Binary         string             `json:"binary"`
-	Configure      string             `json:"configure"`
-	Menu           string             `json:"menu"`
-	Postexec       string             `json:"postexec"`
-	Profiles       []pimpMinerProfile `json:"profiles"`
-	MainVersion    string
-	DevelVersion   string
-	PageURL        string
-	PageURLRegex   string
-	SupportedAlgos []string
-	BtcTalk        string
+	Info           string              `json:"info"`
+	Platform       string              `json:"platform"`
+	Repotype       string              `json:"repotype"`
+	Repo           string              `json:"repo"`
+	Folder         string              `json:"folder"`
+	Binary         string              `json:"binary"`
+	Configure      string              `json:"configure"`
+	Menu           string              `json:"menu"`
+	Postexec       string              `json:"postexec"`
+	Profiles       []pimpMinerProfile  `json:"profiles"`
+	MainVersion    string              `json:"MainVersion"`
+	DevelVersion   string              `json:"DevelVersion"`
+	PageURL        string              `json:"PageURL"`
+	PageURLRegex   string              `json:"PageURLRegex"`
+	SupportedAlgos []map[string]string `json:"SupportedAlgos"`
+	BtcTalk        string              `json:"BtcTalk"`
 }
 
 type pimpMinerProfile struct {
