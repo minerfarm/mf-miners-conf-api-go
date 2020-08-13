@@ -55,21 +55,21 @@ type PimpMiner struct {
 }
 
 type pimpMinerProfile struct {
-	ID    		string 			`json:"id"`
-	Name  		string 			`json:"name"`
-	Cfile 		string			`json:"cfile"`
-	Config 		[]pimpMinerProfileConfig `json:"Config"`
+	ID     string                   `json:"id"`
+	Name   string                   `json:"name"`
+	Cfile  string                   `json:"cfile"`
+	Config []pimpMinerProfileConfig `json:"Config"`
 }
 
 type pimpMinerProfileConfig struct {
-	Flags		string 		`json:"FLAGS"`
-	CONF		string 		`json:"CONF"`
-	API		string 		`json:"API"`
-	Algo		string 		`json:"POOL_TITLE"`
-    	TYPE		string 		`json:"TYPE"`
-	Extra		string 		`json:"EXTRA"`
-    	Notes		string 		`json:"NOTES"`
-	Template	string 		`json:"TEMPLATE"`
+	Flags    string `json:"FLAGS"`
+	CONF     string `json:"CONF"`
+	API      string `json:"API"`
+	Algo     string `json:"POOL_TITLE"`
+	TYPE     string `json:"TYPE"`
+	Extra    string `json:"EXTRA"`
+	Notes    string `json:"NOTES"`
+	Template string `json:"TEMPLATE"`
 }
 
 // Load returns a mapstring of PimpMiners populated with data from the pimpminers.conf file
