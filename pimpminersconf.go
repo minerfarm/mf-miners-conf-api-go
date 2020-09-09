@@ -65,7 +65,7 @@ type pimpMinerProfileConfig struct {
 	Flags    string `json:"FLAGS"`
 	CONF     string `json:"CONF"`
 	API      string `json:"API"`
-	Algo     string `json:"POOL_TITLE"`
+	POOL_TITLE	string `json:"POOL_TITLE"`
 	TYPE     string `json:"TYPE"`
 	Extra    string `json:"EXTRA"`
 	Notes    string `json:"NOTES"`
