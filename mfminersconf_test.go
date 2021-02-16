@@ -1,6 +1,3 @@
-# mfminersconf-go
-
-```go
 /*Package mfminersconf is the API wrapper for interacting with the mf-miners.conf json library.
 Copyright (c) 2021 miner.farm.  All Rights Reserved.
 Author: Portable Instant Mining Platform, LLC
@@ -13,29 +10,20 @@ License: This code is licensed for use with miner.farm only.
         |___|  :/       :/        :
                :        :
 */
-```
 
-Interacts with this Git repo: <https://github.com/minerfarm/mf-miners-conf>
+package mfminersconf
 
-## Example uses
+import (
+	"testing"
+)
 
-Output the Repotype field by Profile #:
+func TestLoad(t *testing.T) {
 
-```go
-fmt.Println(miners["240"][0].Repotype)
-```
+	miners := Load("/tmp/mf-miners.conf")
+	var actualResult = miners["240"][0].Repotype
+	var expectedResult = "binary"
 
-Set a field:
-
-```go
-m := GetMiner("bminer", miners)
-m.Repo = "TestRepo"
-```
-
-Iterate over the miners:
-
-```go
-for k, v := range miners {
-	fmt.Printf("(Profile %s) %s\n", k, v[0].Info)
+	if actualResult != expectedResult {
+		t.Fatalf("Expected %s but got %s", expectedResult, actualResult)
+	}
 }
-```

@@ -1,17 +1,16 @@
-// Package pimpminersconf is the API wrapper for interacting with the pimpminers.conf json library.
-/*==================================================================
-       .__
-______ |__| _____ ______  Portable Instant Mining Platform
-\____ \|  |/     \____  \       By miners, for miners.
-|  |_> >  |  Y Y  \  |_> >
-|   __/|__|__|_|  /   __/    Support: forum.getpimp.org
-|__|            \/|__|
-Copyright (c) 2019 getPiMP.org.  All Rights Reserved.
-License: This code is licensed for use with PiMP only.
-Description: PiMP OS pimpminers.conf API wrapper in Golang
-Interacts with this file: https://github.com/getpimp/pimpminers-conf/pimpminers.conf
-==================================================================*/
-package pimpminersconf
+/*Package mfminersconf is the API wrapper for interacting with the mf-miners.conf json library.
+Copyright (c) 2021 miner.farm.  All Rights Reserved.
+Author: Portable Instant Mining Platform, LLC
+License: This code is licensed for use with miner.farm only.
+  ._____.___ ._______._______  .________
+  :         |:_ ____/: .___  \ |    ___/		   Miner.Farm OS
+  |   \  /  ||   _/  | :   |  ||___    \
+  |   |\/   ||   |   |     :  ||       /	  Support: forum.getpimp.org
+  |___| |   ||_. |    \_. ___/ |__:___/ 	Copyright (c) 2021 getPiMP.org
+        |___|  :/       :/        :
+               :        :
+*/
+package mfminersconf
 
 import (
 	"bytes"
@@ -29,13 +28,13 @@ import (
 	"gopkg.in/src-d/go-git.v4/plumbing/object"
 )
 
-const remote = "https://raw.githubusercontent.com/getpimp/pimpminers-conf/master/pimpminers.conf"
-const stagingFile = "/tmp/pimpminers.conf"
-const localGitRepo = "/tmp/pimpminers-conf"
+const remote = "https://raw.githubusercontent.com/minerfarm/mf-miners-conf/master/mf-miners.conf"
+const stagingFile = "/tmp/mf-miners.conf"
+const localGitRepo = "/tmp/mf-miners-conf"
 const pimp2repo = "https://update.getpimp.org/pimpup/miners/"
 
-// PimpMiner is the golang representation of the pimpminers.conf json library.
-type PimpMiner struct {
+// Miner describes all of the attributes of each miner which is found in the mf-miners.conf json library.
+type Miner struct {
 	Info           string              `json:"info"`
 	Platform       string              `json:"platform"`
 	Repotype       string              `json:"repotype"`
@@ -45,7 +44,7 @@ type PimpMiner struct {
 	Configure      string              `json:"configure"`
 	Menu           string              `json:"menu"`
 	Postexec       string              `json:"postexec"`
-	Profiles       []pimpMinerProfile  `json:"profiles"`
+	Profiles       []MinerProfile      `json:"profiles"`
 	MainVersion    string              `json:"MainVersion"`
 	DevelVersion   string              `json:"DevelVersion"`
 	PageURL        string              `json:"PageURL"`
@@ -54,14 +53,16 @@ type PimpMiner struct {
 	BtcTalk        string              `json:"BtcTalk"`
 }
 
-type pimpMinerProfile struct {
-	ID     string                   `json:"id"`
-	Name   string                   `json:"name"`
-	Cfile  string                   `json:"cfile"`
-	Config []pimpMinerProfileConfig `json:"Config"`
+// MinerProfile is a pcfg file that configures a Miner.
+type MinerProfile struct {
+	ID     string               `json:"id"`
+	Name   string               `json:"name"`
+	Cfile  string               `json:"cfile"`
+	Config []MinerProfileConfig `json:"Config"`
 }
 
-type pimpMinerProfileConfig struct {
+// MinerProfileConfig is a series of template and control metadata which allows confgen to build the pcfg files.
+type MinerProfileConfig struct {
 	Flags      string `json:"FLAGS"`
 	CONF       string `json:"CONF"`
 	API        string `json:"API"`
@@ -72,9 +73,9 @@ type pimpMinerProfileConfig struct {
 	Template   string `json:"TEMPLATE"`
 }
 
-// Load returns a mapstring of PimpMiners populated with data from the pimpminers.conf file
-func Load(file string) map[string][]PimpMiner {
-	// if no file specified, default to /tmp/pimpminers.conf
+// Load returns a mapstring of Miners populated with data from the mf-miners.conf file
+func Load(file string) map[string][]Miner {
+	// if no file specified, default to /tmp/mf-miners.conf
 	if file == "" {
 		file = stagingFile
 	}
@@ -92,25 +93,25 @@ func Load(file string) map[string][]PimpMiner {
 	}
 	defer jsonFile.Close()                   // defer the closing of our jsonFile so that we can parse it later on
 	byteValue, _ := ioutil.ReadAll(jsonFile) // read our opened json file as a byte array.
-	var miners map[string][]PimpMiner        // Create stringmap of our slice of structs
+	var miners map[string][]Miner            // Create stringmap of our slice of structs
 	json.Unmarshal(byteValue, &miners)       // Read in the JSON
 	return miners
 }
 
-// GetMiner returns a PimpMiner object with the specified name from the provided mapstring.
+// GetMiner returns a Miner object with the specified name from the provided mapstring.
 // Note: This is for reading, not setting values.
-func GetMiner(name string, miners map[string][]PimpMiner) PimpMiner {
+func GetMiner(name string, miners map[string][]Miner) Miner {
 	for _, v := range miners {
 		if v[0].Info == name {
 			return v[0]
 		}
 	}
-	return PimpMiner{}
+	return Miner{}
 }
 
-// SetRepo updates a PimpMiner object's repo property with the specified filename.
+// SetRepo updates a Miner object's repo property with the specified filename.
 // Note: This is for pimpup 2.x.
-func SetRepo(name string, repo string, miners map[string][]PimpMiner) string {
+func SetRepo(name string, repo string, miners map[string][]Miner) string {
 	out := ""
 	for _, v := range miners {
 		if v[0].Info == name {
@@ -155,7 +156,7 @@ func RunCommand(cmd string) string {
 }
 
 // Save takes a map of strings to Miners object, marshals it into json, and then saves it as a file.
-func Save(jsonfile string, m map[string][]PimpMiner) {
+func Save(jsonfile string, m map[string][]Miner) {
 	json, err := json.Marshal(m)
 	checkErr(err)
 	f, err := os.Create(jsonfile)
@@ -184,41 +185,41 @@ func PrettyPrint(in string) string {
 	return out.String()
 }
 
-// Clone will clone the pimpminers-conf repo to /tmp/pimpminers-conf.
+// Clone will clone the mf-miners-conf repo to /tmp/mf-miners-conf.
 func Clone() *git.Repository {
 	// backup existing dir and move out of the way.
 	move := fmt.Sprintf("mv %s %s.old", localGitRepo, localGitRepo)
 	RunCommand(move)
 	r, err := git.PlainClone(localGitRepo, false, &git.CloneOptions{
-		URL:      "https://github.com/getpimp/pimpminers-conf.git",
+		URL:      "https://github.com/minerfarm/mf-miners-conf.git",
 		Progress: os.Stdout,
 	})
 	checkErr(err)
 	return r
 }
 
-// Commit will commit the pimpminers-conf repo to git. (Maintainers only.) Returns true if success.
+// Commit will commit the mf-miners-conf repo to git. (Maintainers only.) Returns true if success.
 func Commit(r *git.Repository, msg string) bool {
 	// check for differences.
-	diffCmd := fmt.Sprintf("diff -U 0 %s %s/pimpminers.conf | grep -v ^@ | wc -l", stagingFile, localGitRepo)
+	diffCmd := fmt.Sprintf("diff -U 0 %s %s/mf-miners.conf | grep -v ^@ | wc -l", stagingFile, localGitRepo)
 	diff := RunCommand(diffCmd)
 	diff = strings.TrimSpace(diff)
 	if diff == "0" {
 		fmt.Println("No changes to commit.")
 	} else {
 		// copy file from staging into worktree
-		diffCmd = fmt.Sprintf("diff -U 0 %s %s/pimpminers.conf | grep -v ^@", stagingFile, localGitRepo)
+		diffCmd = fmt.Sprintf("diff -U 0 %s %s/mf-miners.conf | grep -v ^@", stagingFile, localGitRepo)
 		diff = RunCommand(diffCmd)
 		diff = strings.TrimSpace(diff)
 		fmt.Println("Changes:")
 		fmt.Println(diff)
 		fmt.Println("\nCommitting changes... ")
-		copy := fmt.Sprintf("cp %s %s/pimpminers.conf", stagingFile, localGitRepo)
+		copy := fmt.Sprintf("cp %s %s/mf-miners.conf", stagingFile, localGitRepo)
 		RunCommand(copy)
 		w, err := r.Worktree()
 		checkErr(err)
 		// add files
-		_, err = w.Add("pimpminers.conf")
+		_, err = w.Add("mf-miners.conf")
 		checkErr(err)
 		// commit
 		_, err = w.Commit(msg, &git.CommitOptions{
