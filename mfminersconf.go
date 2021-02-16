@@ -30,7 +30,7 @@ import (
 
 const remote = "https://raw.githubusercontent.com/minerfarm/mf-miners-conf/master/mf-miners.conf"
 const stagingFile = "/tmp/mf-miners.conf"
-const localGitRepo = "/tmp/mf-miners-conf"
+const localGitRepo = "/tmp/mfminersconf"
 const pimp2repo = "https://update.getpimp.org/pimpup/miners/"
 
 // Miner describes all of the attributes of each miner which is found in the mf-miners.conf json library.
