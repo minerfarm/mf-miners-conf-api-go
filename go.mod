@@ -1,4 +1,4 @@
-module mf-minersconf-api-go
+module github.com/minerfarm/mf-minersconf-api-go
 
 go 1.14
 
