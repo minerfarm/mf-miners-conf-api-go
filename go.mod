@@ -1,4 +1,4 @@
-module example.com/m/v2
+module mf-minersconf-api-go
 
 go 1.14
 
