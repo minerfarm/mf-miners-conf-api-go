@@ -1,4 +1,4 @@
-# mf-minersconf-go
+# mf-minersconf-api-go
 
 Package mfminersconf is the API wrapper for interacting with the mf-miners.conf
 json library. Copyright (c) 2021 miner.farm. All Rights Reserved. Author:
